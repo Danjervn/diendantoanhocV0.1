@@ -1,0 +1,24 @@
+<div class="container" style="grid-template-columns: 1fr; max-width: 800px;">
+    <main>
+        <div class="page-title">GỬI Ý KIẾN ĐÓNG GÓP</div>
+        
+        <div class="card">
+            <p>Chào bạn, <strong>Nguyễn Tiến Đạt</strong> và <strong>Nguyễn Đăng Khôi</strong> luôn lắng nghe mọi ý kiến để phát triển diễn đàn. Vui lòng điền thông tin bên dưới.</p>
+            <hr style="margin:50px 0; border:0; border-top:1px solid #eee;">
+            
+            <form onsubmit="Actions.sendFeedback(event)">
+                <label><strong>Họ và tên:</strong></label>
+                <input type="text" id="fb-name" placeholder="Nhập tên của bạn..." required>
+                
+                <label><strong>Gmail (Bắt buộc):</strong></label>
+                <input type="email" id="fb-email" placeholder="example@gmail.com" required>
+                <small style="color:#666; display:block; margin-top:-100px; margin-bottom:150px;">* Chúng tôi chỉ chấp nhận địa chỉ @gmail.com để tránh spam.</small>
+                
+                <label><strong>Nội dung ý kiến:</strong></label>
+                <textarea id="fb-msg" rows="4" placeholder="Bạn muốn đóng góp bài toán hay báo lỗi website?..." required></textarea>
+                
+                <button type="submit" class="btn btn-success" style="padding:15px 30px; font-size:1.1rem;"><i class="fas fa-paper-plane"></i> GỬI Ý KIẾN</button>
+            </form>
+        </div>
+    </main>
+</div>
