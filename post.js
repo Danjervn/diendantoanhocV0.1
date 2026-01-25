@@ -1,5 +1,3 @@
-// Hiển thị chi tiết bài và xử lý feedback qua Supabase
-
 function escapeHtml(str = "") {
   return String(str)
     .replaceAll("&", "&amp;")
@@ -9,147 +7,125 @@ function escapeHtml(str = "") {
     .replaceAll("'", "&#039;");
 }
 
+let currentPostId = null;
+
+// Load khi mở trang
+document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  currentPostId = params.get("id");
+  renderPost();
+});
+
 async function renderPost() {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
   const titleEl = document.getElementById("post-title");
-  if (!id) {
-    if (titleEl) titleEl.innerText = "Bài viết không tồn tại";
+
+  if (!currentPostId) {
+    titleEl.innerText = "Bài viết không tồn tại";
     return;
   }
 
-  try {
-    const { data: post, error } = await supabase
-      .from("posts")
-      .select("*")
-      .eq("id", Number(id))
-      .single();
+  const { data: post, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", Number(currentPostId))
+    .single();
 
-    if (error || !post) {
-      console.error("fetch post error:", error);
-      if (titleEl) titleEl.innerText = "Bài viết không tồn tại";
-      return;
-    }
-
-    if (titleEl) titleEl.innerText = post.title || "";
-    const authorEl = document.getElementById("post-author");
-    if (authorEl) authorEl.innerText = post.author || "";
-
-    let categoryText = "";
-    if (post.category === "algebra") categoryText = "Đại số";
-    if (post.category === "geometry") categoryText = "Hình học";
-    if (post.category === "calculus") categoryText = "Giải tích";
-    const categoryEl = document.getElementById("post-category");
-    if (categoryEl) categoryEl.innerText = categoryText;
-
-    const contentEl = document.getElementById("post-content");
-    if (contentEl) contentEl.innerText = post.content || "";
-
-    // Hiển thị ảnh (post.images expected array of URLs)
-    const imageBox = document.getElementById("image-container");
-    if (imageBox) {
-      imageBox.innerHTML = "";
-      if (Array.isArray(post.images) && post.images.length) {
-        if (post.images.length > 1) imageBox.classList.add("multiple-images");
-        else imageBox.classList.remove("multiple-images");
-
-        post.images.forEach((src, i) => {
-          const img = document.createElement("img");
-          img.src = src;
-          img.alt = post.title || ("Hình " + (i + 1));
-          img.loading = "lazy";
-          imageBox.appendChild(img);
-        });
-      }
-    }
-
-    renderFeedback(post);
-  } catch (err) {
-    console.error("renderPost error:", err);
-  }
-}
-
-function renderFeedback(post) {
-  const list = document.getElementById("feedback-list");
-  if (!list) return;
-  list.innerHTML = "";
-
-  if (!post || !post.feedback || post.feedback.length === 0) {
-    list.innerText = "Chưa có feedback.";
+  if (error || !post) {
+    console.error(error);
+    titleEl.innerText = "Bài viết không tồn tại";
     return;
   }
 
-  post.feedback.forEach(fb => {
-    const div = document.createElement("div");
-    div.className = "post";
-    div.innerHTML = `<b>${escapeHtml(fb.name || "Khách")}</b><br>${escapeHtml(fb.content || "")}`;
-    list.appendChild(div);
-  });
-}
+  document.getElementById("post-title").innerText = post.title || "";
+  document.getElementById("post-author").innerText = post.author || "";
+  document.getElementById("post-category").innerText = post.category || "";
+  document.getElementById("post-content").innerText = post.content || "";
 
-async function addFeedback() {
-  const nameElem = document.getElementById("fb-name");
-  const contentElem = document.getElementById("fb-content");
-  const name = nameElem ? nameElem.value.trim() : "";
-  const content = contentElem ? contentElem.value.trim() : "";
-  if (!name || !content) {
-    alert("Vui lòng nhập đầy đủ tên và nội dung feedback.");
-    return;
+  // ảnh
+  const imageBox = document.getElementById("image-container");
+  imageBox.innerHTML = "";
+  if (Array.isArray(post.images)) {
+    post.images.forEach(src => {
+      const img = document.createElement("img");
+      img.src = src;
+      imageBox.appendChild(img);
+    });
   }
 
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
-  if (!id) { alert("Bài viết không tồn tại."); return; }
-
-  try {
-    // Lấy feedback hiện tại
-    const { data: post, error: fetchErr } = await supabase
-      .from("posts")
-      .select("feedback")
-      .eq("id", Number(id))
-      .single();
-
-    if (fetchErr) throw fetchErr;
-
-    const feedback = Array.isArray(post.feedback) ? post.feedback : [];
-    feedback.push({ name, content });
-
-    const { error: updateErr } = await supabase
-      .from("posts")
-      .update({ feedback })
-      .eq("id", Number(id));
-
-    if (updateErr) throw updateErr;
-
-    if (nameElem) nameElem.value = "";
-    if (contentElem) contentElem.value = "";
-    // reload post data
-    await renderPost();
-  } catch (err) {
-    console.error("addFeedback error:", err);
-    alert("Gửi feedback thất bại.");
-  }
+  renderFeedback(post.feedback || []);
 }
-function renderFeedback(feedbackList) {
+
+// Vẽ feedback
+function renderFeedback(list) {
   const box = document.getElementById("feedback-list");
   box.innerHTML = "";
 
-  feedbackList.forEach(fb => {
+  if (list.length === 0) {
+    box.innerHTML = "<i>Chưa có feedback</i>";
+    return;
+  }
+
+  list.forEach(fb => {
     const div = document.createElement("div");
-    div.className = "feedback-item";
+    div.className = "post";
     div.innerHTML = `
-      <b>${fb.name}</b> (${fb.email})<br>
+      <b>${escapeHtml(fb.name)}</b> (${escapeHtml(fb.email)})<br>
       <small>${new Date(fb.created_at).toLocaleString()}</small>
-      <p>${fb.message}</p>
+      <p>${escapeHtml(fb.message)}</p>
       <hr>
     `;
     box.appendChild(div);
   });
 }
 
+// Gửi feedback
+async function addFeedback() {
+  const name = document.getElementById("fb-name").value.trim();
+  const email = document.getElementById("fb-email").value.trim();
+  const message = document.getElementById("fb-content").value.trim();
+
+  if (!name || !email || !message) {
+    alert("Nhập đầy đủ thông tin");
+    return;
+  }
+
+  if (!email.endsWith("@gmail.com")) {
+    alert("Chỉ chấp nhận Gmail");
+    return;
+  }
+
+  const comment = {
+    id: crypto.randomUUID(),
+    name,
+    email,
+    message,
+    created_at: new Date().toISOString()
+  };
+
+  // Lấy feedback hiện tại
+  const { data: post } = await supabase
+    .from("posts")
+    .select("feedback")
+    .eq("id", Number(currentPostId))
+    .single();
+
+  const current = Array.isArray(post.feedback) ? post.feedback : [];
+  const updated = [...current, comment];
+
+  // Update lại DB
+  const { error } = await supabase
+    .from("posts")
+    .update({ feedback: updated })
+    .eq("id", Number(currentPostId));
+
+  if (error) {
+    console.error(error);
+    alert("Lỗi khi gửi feedback (RLS?)");
+    return;
+  }
+
+  document.getElementById("fb-content").value = "";
+  renderFeedback(updated);
+}
+
 window.addFeedback = addFeedback;
-
-document.addEventListener("DOMContentLoaded", () => {
-  renderPost();
-});
-
