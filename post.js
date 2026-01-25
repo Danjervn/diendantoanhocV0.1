@@ -130,9 +130,26 @@ async function addFeedback() {
     alert("Gửi feedback thất bại.");
   }
 }
+function renderFeedback(feedbackList) {
+  const box = document.getElementById("feedback-list");
+  box.innerHTML = "";
+
+  feedbackList.forEach(fb => {
+    const div = document.createElement("div");
+    div.className = "feedback-item";
+    div.innerHTML = `
+      <b>${fb.name}</b> (${fb.email})<br>
+      <small>${new Date(fb.created_at).toLocaleString()}</small>
+      <p>${fb.message}</p>
+      <hr>
+    `;
+    box.appendChild(div);
+  });
+}
 
 window.addFeedback = addFeedback;
 
 document.addEventListener("DOMContentLoaded", () => {
   renderPost();
 });
+
