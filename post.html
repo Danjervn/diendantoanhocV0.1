@@ -48,14 +48,16 @@
     <hr>
 
     <!-- FEEDBACK -->
-    <h3>Feedback</h3>
-    <div id="feedback-list"></div>
+<h3>Feedback</h3>
+<div id="feedback-list"></div>
 
-    <div class="feedback">
-        <input type="text" id="fb-name" placeholder="Tên của bạn">
-        <textarea id="fb-content" placeholder="Nội dung feedback"></textarea>
-        <button id="fb-send" onclick="addFeedback()">Gửi feedback</button>
-    </div>
+<div class="feedback">
+    <input type="text" id="fb-name" placeholder="Tên của bạn">
+    <input type="email" id="fb-email" placeholder="Email (gmail)">
+    <textarea id="fb-content" placeholder="Nội dung feedback"></textarea>
+    <button id="fb-send" onclick="addFeedback(currentPostId)">Gửi feedback</button>
+</div>
+
 
 </div>
 
@@ -65,4 +67,5 @@
 <script src="post.js"></script>
 </body>
 </html>
+
 
