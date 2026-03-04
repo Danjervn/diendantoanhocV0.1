@@ -16,4 +16,4 @@ window.GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 // - mixtral-8x7b-32768-gpt4o-preview (Tương đương GPT-4o)
 // - gemma-7b-it (Nhỏ, nhanh)
 
-window.GROQ_MODEL = "llama-3.1-8b";
+window.GROQ_MODEL = "llama-3.1-8b-instant";
