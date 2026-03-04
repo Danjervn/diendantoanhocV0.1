@@ -41,8 +41,52 @@
 <script>
     showCategory("calculus");
 </script>
+    <!-- AI Chatbot Container -->
+<div id="chatbot-container" class="chatbot-container">
+  <div class="chat-header">
+    <div class="header-content">
+      <h3>🤖 Trợ lý Toán học AI</h3>
+      <span class="status">Groq • Sẵn sàng</span>
+    </div>
+    <div class="header-actions">
+      <button id="clear-btn" title="Xóa lịch sử" onclick="window.mathChatbot?.clearHistory()">🔄</button>
+      <button id="close-chat" title="Đóng">✕</button>
+    </div>
+  </div>
+
+  <div id="chat-box" class="chat-box">
+    <div class="message message-bot welcome">
+      <div class="message-content">
+        👋 <strong>Xin chào!</strong> Tôi là trợ lý toán học. 
+        <br>Bạn có câu hỏi gì về toán học không?
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input-area">
+    <input
+      type="text"
+      id="chat-input"
+      placeholder="Nhập câu hỏi toán học..."
+      autocomplete="off"
+    />
+    <button id="send-btn">📤 Gửi</button>
+  </div>
+</div>
+
+<!-- Button để mở/đóng chatbox -->
+<button id="chatbot-toggle" class="chatbot-toggle" onclick="document.getElementById('chatbot-container').style.display = document.getElementById('chatbot-container').style.display === 'none' ? 'flex' : 'none'">
+  💬
+</button>
+
+<!-- CSS Chatbot -->
+<link rel="stylesheet" href="chatbot.css">
+
+<!-- JS Chatbot -->
+<script src="aiChatbot.js"></script>
 
 </body>
 </html>
+
 
 
