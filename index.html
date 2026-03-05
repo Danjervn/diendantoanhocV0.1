@@ -69,14 +69,14 @@
   </div>
 
   <div class="chat-input-area">
-    <input
-      type="text"
-      id="chat-input"
-      placeholder="Nhập câu hỏi toán học..."
-      autocomplete="off"
-    />
-    <button id="send-btn">📤 Gửi</button>
-  </div>
+  <button id="attach-btn" title="Đính kèm file/ảnh">📎</button>
+  <input type="file" id="file-upload" accept="image/*,.docx,.txt" style="display: none;" />
+  
+  <button id="voice-btn" title="Ghi âm giọng nói">🎤</button>
+  
+  <input type="text" id="chat-input" placeholder="Nhập câu hỏi..." autocomplete="off" />
+  <button id="send-btn">📤</button>
+</div>
 </div>
 
 <!-- Button để mở/đóng chatbox -->
@@ -91,5 +91,6 @@
 <script src="aiChatbot.js"></script>
 </body>
 </html>
+
 
 
