@@ -1,0 +1,11 @@
+{
+  "name": "diendantoanhoc",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^1.0.0"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
